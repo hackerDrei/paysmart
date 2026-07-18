@@ -14,12 +14,6 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Unzip project files
-        run: |
-          unzip paysmart-app.zip -d extracted_project
-          # I-move lahat ng files sa root level para mabasa ng build tools
-          mv extracted_project/paysmart-app/* . || mv extracted_project/* . || true
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
