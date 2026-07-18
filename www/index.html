@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PAYSMART Prototype - Beta Test v1</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+   <style>
+        /* Global & Performance Mobile Fixes */
+        body {
+            overscroll-behavior-y: contain;
+        }
+        .overflow-y-auto {
+            -webkit-overflow-scrolling: touch;
+        }
+        button, [onclick] {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* DEFAULT (Pang-Desktop / Testing View sa Browser): May frame at border */
+        .mobile-screen {
+            max-width: 412px;  /* Standard Android/iOS width */
+            height: 844px;     /* Mas siksik at magandang mobile height */
+        }
+
+        /* AUTOMATIC RESPONSIVE (Pang-Webwrap / Actual Mobile View): Kusa itong gagana kapag nasa cp na */
+        @media (max-width: 640px) {
+            .mobile-screen {
+                max-width: 100% !important;
+                height: 100vh !important;
+                height: -webkit-fill-available !important; /* Para sa iOS notch */
+                border: none !important;
+                border-radius: 0px !important;
+            }
+            body {
+                padding: 0 !important;
+            }
+        }
+
+        /* Custom scrollbar para malinis tingnan ang scrollable areas */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 flex justify-center items-center min-h-screen font-sans p-4 select-none">
+
+    <!-- CONTAINER Mobile Frame -->
+    <div class="mobile-screen w-full bg-slate-950 text-white rounded-[48px] shadow-2xl border-[10px] border-slate-800 overflow-hidden flex flex-col relative">
+        
+        <!-- ==================== SCREEN 1: SPLASH & LOGIN ==================== -->
+        <div id="login-screen" class="flex-1 flex flex-col justify-between p-6">
+            <!-- Top Branding & Logo -->
+            <div class="text-center mt-16">
+                <div class="inline-flex p-4 bg-blue-600 rounded-[24px] mb-4 shadow-lg shadow-blue-500/30">
+                    <!-- Secure Wallet / Smart Icon -->
+                    <svg class="w-10 h-10 text-white fill-none stroke=currentColor" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-4xl font-black tracking-wider text-blue-500">PAY<span class="text-white">SMART</span></h1>
+                <p class="text-slate-400 text-xs mt-2 font-medium tracking-wide">SMART DEBT PRIORITY & BUDGETING</p>
+            </div>
+
+            <!-- Login Input Card -->
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 space-y-4 my-auto backdrop-blur-sm">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Username</label>
+                    <input type="text" id="username" class="w-full bg-slate-950/80 border border-slate-800/80 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-600" placeholder="Enter username">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Password</label>
+                    <input type="password" id="password" class="w-full bg-slate-950/80 border border-slate-800/80 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-600" placeholder="••••••••">
+                </div>
+                <button id="login-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-all text-sm mt-2 flex justify-center items-center gap-2">
+                    <span>Sign In</span>
+                    <svg class="w-4 h-4 fill-none stroke="currentColor" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+
+            <!-- Version & Info Footer -->
+            <div class="text-center mb-4">
+                <p class="text-[10px] text-slate-600 font-medium">PAYSMART Prototype • Build v1.3.0-Persistent</p>
+            </div>
+        </div>
+
+        <!-- ==================== SCREEN 2: DASHBOARD (HOME) ==================== -->
+        <div id="dashboard-screen" class="hidden flex-1 flex flex-col p-5 no-scrollbar overflow-y-auto">
+            <!-- Custom App Bar -->
+            <div class="flex justify-between items-center mt-2 mb-4">
+                <div>
+                    <p class="text-[11px] text-slate-500 font-semibold tracking-wider uppercase">Welcome Back,</p>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-1.5">
+                        <span id="display-user-name">User</span> <span class="text-amber-400 text-sm">⚡</span>
+                    </h2>
+                </div>
+                <div id="display-avatar" class="w-10 h-10 rounded-2xl bg-blue-600/10 border border-blue-500/30 flex items-center justify-center font-bold text-xs text-blue-400 shadow-lg shadow-blue-950/50 uppercase">
+                    US
+                </div>
+            </div>
+
+            <!-- Budget & Debt Summary Card -->
+            <div class="bg-gradient-to-br from-blue-900/90 via-blue-950 to-slate-950 p-5 rounded-3xl border border-blue-500/20 shadow-xl shadow-blue-950/40 mb-4 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+
+                <div class="grid grid-cols-2 gap-4 relative z-10">
+                    <!-- Extra Budget Slot -->
+                    <div>
+                        <p class="text-[10px] text-blue-100 uppercase tracking-widest font-bold mb-1">Extra Budget (₱)</p>
+                        <!-- Tinanggal ang border-b at ginawang flex para pantay at malinis tingnan -->
+                        <div class="flex items-center pb-1">
+                            <span class="text-white text-xl font-black mr-0.5">₱</span>
+                            <input type="number" id="extraCashInput" inputmode="numeric" pattern="[0-9]*" value="10200" min="0"
+                                class="w-full bg-transparent font-black text-xl text-white outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                oninput="updateBudget(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- Leftover Cash Slot -->
+                    <div class="border-l border-slate-800/80 pl-3">
+                        <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">Leftover Cash</p>
+                        <div class="flex items-center h-[33px]">
+                            <h3 id="remainingCashDisplay" class="text-xl font-black tracking-tight text-emerald-300">₱0.00</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Debt Row -->
+                <div class="mt-4 pt-4 border-t border-slate-800/80 flex justify-between items-center relative z-10">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Total Active Debt</p>
+                    <h3 id="total-debt-display" class="text-lg font-black text-slate-300">₱0.00</h3>
+                </div>
+            </div>
+
+            <!-- Dynamic Priority Alert Card (Engine Driven) -->
+            <div id="dashboard-alert-card" class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mb-4 flex items-start gap-3 flex-shrink-0">
+                <div class="p-2 bg-red-500/20 rounded-xl text-red-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-[10px] font-bold text-red-400 uppercase tracking-wider">Top Priority Match</h4>
+                        <span class="text-[9px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-extrabold uppercase">Alert</span>
+                    </div>
+                    <p id="alert-title" class="text-sm font-extrabold text-white mt-1">Calculating...</p>
+                    <p id="alert-desc" class="text-[11px] text-slate-400 mt-1 leading-relaxed">System is running calculations.</p>
+                </div>
+            </div>
+
+            <!-- Active Debts Container -->
+            <div class="flex-1 min-h-0 flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 id="dashboard-debt-header" class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Active Debts (0)</h4>
+                    <span class="text-[10px] text-blue-400 font-bold hover:underline cursor-pointer" onclick="switchScreen('debts')">View All</span>
+                </div>
+                
+                <div id="dashboard-debt-list" class="space-y-3 overflow-y-auto pr-1 flex-1 no-scrollbar pb-6">
+                    <!-- Dynamic Items -->
+                </div>
+            </div>
+        </div>
+
+       <!-- ==================== SCREEN 3: DEBTS MANAGEMENT ==================== -->
+        <div id="debts-screen" class="hidden flex-1 flex flex-col p-5 no-scrollbar overflow-y-auto">
+            <div class="mt-4 mb-5">
+                <h2 class="text-xl font-bold text-white">Debt Matrix</h2>
+                <p class="text-xs text-slate-500">Add and trace dynamic debt entries</p>
+            </div>
+
+            <!-- Dynamic Form -->
+            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 mb-4 space-y-3">
+                <h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Quick Add Entry</h3>
+                <div class="space-y-2">
+                    <input type="text" id="input-name" placeholder="Debt Name (e.g. GCash Loan)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500">
+                    
+                    <!-- Dito natin binago ang grid para maging malinis ang bagsak ng Date Picker -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="number" id="input-amount" inputmode="numeric" pattern="[0-9]*" placeholder="Amount (₱)" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[11px] text-white focus:outline-none focus:border-blue-500">
+                        <input type="number" id="input-interest" inputmode="numeric" pattern="[0-9]*" placeholder="Interest %" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[11px] text-white focus:outline-none focus:border-blue-500">
+                        
+                        <!-- Pinalitan ang input-days ng type="date" para lumabas ang kalendaryo sa cp -->
+                        <input type="date" id="input-duedate" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[10px] text-slate-400 focus:outline-none focus:border-blue-500 uppercase font-bold tracking-tighter">
+                    </div>
+                </div>
+                <button onclick="addDebt()" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-blue-500 transition-all shadow-md shadow-blue-500/10">
+                    + Register Entry
+                </button>
+            </div>
+
+            <!-- Full Dynamic List Container -->
+            <div class="flex-1 flex flex-col">
+                <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Calculated Queue Order</h4>
+                <div id="full-debt-list" class="space-y-2 overflow-y-auto flex-1 pb-4">
+                    <!-- Dynamic items -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SCREEN 4: SETTINGS & PARAMETERS ==================== -->
+        <div id="settings-screen" class="hidden flex-1 flex flex-col p-5 no-scrollbar overflow-y-auto">
+            <div class="mt-4 mb-5">
+                <h2 class="text-xl font-bold text-white">Settings & Logs</h2>
+                <p class="text-xs text-slate-500">Configure core algorithms & view history</p>
+            </div>
+
+            <div class="space-y-4 flex-1 flex flex-col min-h-0">
+                <!-- User Meta Profile Card -->
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center gap-3 flex-shrink-0">
+                    <div id="settings-avatar" class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white uppercase">US</div>
+                    <div>
+                        <h3 id="settings-user-name" class="text-sm font-bold text-white">User</h3>
+                        <p class="text-xs text-slate-500">Active Tester • PAYSMART Build</p>
+                    </div>
+                </div>
+
+                <!-- Payment History Container -->
+                <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 flex-1 flex flex-col min-h-[220px]">
+                    <div class="flex justify-between items-center mb-2 flex-shrink-0">
+                        <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Payment History</h4>
+                        <button onclick="clearHistory()" class="text-[9px] text-red-400 font-bold hover:underline">Clear Logs</button>
+                    </div>
+                    <!-- Dito babagsak ang mga nabayaran -->
+                    <div id="history-log-list" class="space-y-2 overflow-y-auto flex-1 pr-1 no-scrollbar text-xs">
+                        <!-- Dynamic Items or Empty State -->
+                    </div>
+                </div>
+
+                <!-- Weight Metrics -->
+                <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 space-y-3 flex-shrink-0">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Weight Metrics</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Interest Weight</span>
+                            <span class="text-blue-400 font-bold">40%</span>
+                        </div>
+                        <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full w-[40%]"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-2 pt-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400">Due Date Urgency</span>
+                            <span class="text-purple-400 font-bold">60%</span>
+                        </div>
+                        <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-purple-500 h-full w-[60%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="logout-btn" class="w-full bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white font-bold py-3 rounded-xl transition-all text-xs mt-4 flex-shrink-0">
+                    Sign Out Secure Session
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== FIXED MOBILE TAB BAR NAVIGATION ==================== -->
+        <div id="nav-bar" class="hidden mt-auto pt-4 pb-6 border-t border-slate-900/80 flex justify-center items-center text-slate-500 text-xs bg-slate-950/95 backdrop-blur-md z-50">
+            <button id="btn-home" class="flex flex-col items-center gap-1.5 text-blue-500 transition-colors w-20" onclick="switchScreen('home')">
+                <svg class="w-5 h-5 fill-none stroke="currentColor" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-wider block text-center w-full">Home</span>
+            </button>
+            <button id="btn-debts" class="flex flex-col items-center gap-1.5 hover:text-white transition-colors w-20" onclick="switchScreen('debts')">
+                <svg class="w-5 h-5 fill-none stroke="currentColor" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-wider block text-center w-full">Debts</span>
+            </button>
+            <button id="btn-settings" class="flex flex-col items-center gap-1.5 hover:text-white transition-colors w-20" onclick="switchScreen('settings')">
+                <svg class="w-5 h-5 fill-none stroke="currentColor" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span class="text-[9px] font-bold uppercase tracking-wider block text-center w-full">Settings</span>
+            </button>
+        </div>
+
+        <!-- ==================== PORTAL PAYMENT DIALOG / MODAL OVERLAY ==================== -->
+        <div id="payment-modal" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-[100] flex justify-center items-center p-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 w-full max-w-[320px] shadow-2xl space-y-4 animate-[fadeIn_0.15s_ease-out]">
+                <div class="text-center">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Process Payment</h3>
+                    <p id="modal-debt-name" class="text-xs text-blue-400 mt-1 font-semibold">Debt Name</p>
+                    <p id="modal-debt-max" class="text-[10px] text-slate-500 mt-0.5">Remaining Bal ₱0.00</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Payment Amount (₱)</label>
+                    <input type="number" id="modal-payment-amount" inputmode="numeric" pattern="[0-9]*" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500" placeholder="0">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="closePaymentModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold py-2.5 rounded-xl text-xs transition-all">
+                        Cancel
+                    </button>
+                    <button onclick="submitPayment()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all shadow-md shadow-blue-500/10">
+                        Confirm Pay
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== MOBILE NATIVE TOAST NOTIFICATION ==================== -->
+        <div id="custom-toast" 
+            style="position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; z-index: 9999;" 
+            class="bg-slate-900/95 border border-slate-800 text-slate-200 text-xs font-semibold py-3 px-4 rounded-2xl shadow-2xl transition-all duration-300 opacity-0 pointer-events-none backdrop-blur-md">
+            Notification message
+        </div>
+
+    </div>
+
+    <!-- MODERN SPA STATE ROUTER & PERSISTENT LOCALSTORAGE ENGINE -->
+    <script>
+        // Function para kalkulahin kung ilang araw ang natitira
+        function calculateDaysRemaining(dueDateString) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // I-reset ang oras para buong araw ang bilang
+            
+            const dueDate = new Date(dueDateString);
+            dueDate.setHours(0, 0, 0, 0);
+
+            const diffTime = dueDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return diffDays; 
+        }
+
+        /* --- 1. LOCALSTORAGE STATE INITIALIZATION --- */
+        const WEIGHTS = { interest: 0.40, urgency: 0.60 };
+        
+        /* Load session and data from LocalStorage or use standard fallbacks */
+        let currentUser = localStorage.getItem('paysmart_user');
+        let extraBudget = parseFloat(localStorage.getItem('paysmart_budget')) || 10200;
+        
+        let defaultDebts = [
+            { id: 1, name: "Credit Card", amount: 15000, interest: 35, days: 3 },
+            { id: 2, name: "Appliance Loan", amount: 8000, interest: 12, days: 18 },
+            { id: 3, name: "Personal Cash Loan", amount: 5000, interest: 5, days: 25 }
+        ];
+        
+        let debts = JSON.parse(localStorage.getItem('paysmart_debts')) || defaultDebts;
+        let activePaymentDebtId = null;
+
+        /* Load history from LocalStorage or fallback to empty array */
+        let paymentHistory = JSON.parse(localStorage.getItem('paysmart_history')) || [];
+
+        function calculateScore(interest, days) {
+            const interestScore = interest * WEIGHTS.interest;
+            const urgencyScore = (1 / days) * 100 * WEIGHTS.urgency;
+            return parseFloat((interestScore + urgencyScore).toFixed(2));
+        }
+
+        /* Save states back to local cache */
+        function saveData() {
+            localStorage.setItem('paysmart_debts', JSON.stringify(debts));
+            localStorage.setItem('paysmart_budget', extraBudget.toString());
+            localStorage.setItem('paysmart_history', JSON.stringify(paymentHistory));
+        }
+
+        /* --- 1B. TOAST CONTROLLER --- */
+        let toastTimeout = null;
+        function showToast(message) {
+            const toast = document.getElementById('custom-toast');
+            toast.innerText = message;
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        /* --- 2. DYNAMIC SESSION LOOKS SETUP --- */
+        function applyUserSession(username) {
+            if (!username) return;
+            currentUser = username;
+            localStorage.setItem('paysmart_user', currentUser);
+
+            /* Gagawa ng functional 2-letter avatar token base sa username */
+            let cleanUser = username.replace(/[^a-zA-Z0-9]/g, '');
+            let initials = "US";
+            if (cleanUser.length >= 2) {
+                initials = cleanUser.substring(0, 2);
+            } else if (cleanUser.length === 1) {
+                initials = cleanUser + "X";
+            }
+
+            /* Baguhin ang mga pangalan at avatar sa app */
+            document.getElementById('display-user-name').innerText = username;
+            document.getElementById('settings-user-name').innerText = username;
+            document.getElementById('display-avatar').innerText = initials;
+            document.getElementById('settings-avatar').innerText = initials;
+        }
+
+        /* --- 3. BUDGET DYNAMIC UPDATE --- */
+        function updateBudget(val) {
+            extraBudget = parseFloat(val) || 0;
+            saveData();
+            renderApp();
+        }
+
+       /* --- 4. RENDER ENGINE --- */
+        function renderApp() {
+            let hasChanges = false; // Tracker para malaman kung may nagbago sa data at kailangang mag-save
+
+            // REAL-TIME ENGINE: Kinakalcula ang dynamic days at score base sa calendar date ngayon
+            debts.forEach(d => { 
+                const daysLeft = calculateDaysRemaining(d.dueDate || d.days); 
+                
+                // ==========================================
+                // DYNAMIC COMPOUND OVERDUE PENALTY
+                // ==========================================
+                if (daysLeft < 0) {
+                    const totalDaysOverdue = Math.abs(daysLeft);
+                    
+                    // Siguraduhing may tracker ang utang para sa mga araw na napatungan na
+                    if (!d.lastPenaltyDays) d.lastPenaltyDays = 0;
+                    
+                    // Kung may mga bagong araw na lumipas na hindi pa nabibilang ang tubo:
+                    if (totalDaysOverdue > d.lastPenaltyDays) {
+                        const unpaidDays = totalDaysOverdue - d.lastPenaltyDays;
+                        
+                        // Patong ng tubo bawat araw na lumalampas (Daily Compounding based on interest %)
+                        for (let i = 0; i < unpaidDays; i++) {
+                            d.amount = d.amount + (d.amount * (d.interest / 100));
+                        }
+                        
+                        d.lastPenaltyDays = totalDaysOverdue; // I-record na natapos na ang kalkulasyon para sa mga araw na ito
+                        hasChanges = true; // Kailangang i-save ang bagong amount
+                    }
+                }
+                // ==========================================
+
+                const dynamicDays = daysLeft <= 0 ? 0.5 : daysLeft; // Iwasan ang division by zero o negative
+                
+                // DYNAMIC SCORE FORMULA: Ginagamit na ang real-time remaining days at updated amount
+                d.score = Math.round((d.amount * (d.interest / 100)) / dynamicDays);
+            });
+            
+            // Kung may pumatong na interes, automatic na ise-save sa LocalStorage
+            if (hasChanges && typeof saveData === 'function') {
+                saveData();
+            }
+            
+            // I-sort ang queue: Pinakamataas na score ang laging priority sa taas
+            debts.sort((a, b) => b.score - a.score);
+
+            /* A. Compute Leftover Balance */
+            let totalActiveDebtsAmount = 0;
+            debts.forEach(d => { totalActiveDebtsAmount += d.amount; });
+            
+            /* REVISED: I-cap sa 0 ang pinakamababang pwedeng ilabas ng Leftover Cash */
+            const leftoverCash = Math.max(0, extraBudget - totalActiveDebtsAmount);
+
+            /* I-render ang Extra Budget Input field safely */
+            document.getElementById('extraCashInput').value = extraBudget;
+            
+            /* NEW: I-render ang bagong Total Debt slot */
+            if (document.getElementById('total-debt-display')) {
+                document.getElementById('total-debt-display').innerText = `₱${totalActiveDebtsAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+            
+            /* I-render ang Leftover Cash */
+            const leftoverDisplay = document.getElementById('remainingCashDisplay');
+            leftoverDisplay.innerText = `₱${leftoverCash.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            /* Dynamic color at animation indicator para sa Leftover Cash kapag kulang ang budget */
+            if (extraBudget < totalActiveDebtsAmount) {
+                leftoverDisplay.className = "text-xl font-black tracking-tight text-red-500 animate-pulse";
+            } else {
+                leftoverDisplay.className = "text-xl font-black tracking-tight text-emerald-300";
+            }
+
+           /* B. Build Dashboard Active Debts */
+            const dashboardDebtList = document.getElementById('dashboard-debt-list');
+            const dashboardDebtHeader = document.getElementById('dashboard-debt-header');
+            dashboardDebtHeader.innerText = `Active Debts (${debts.length})`;
+            dashboardDebtList.innerHTML = '';
+
+            // Heto ang conditional checker para sa malinis na Empty State UI
+            if (debts.length === 0) {
+                dashboardDebtList.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+                        <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mb-3 shadow-lg shadow-emerald-950/50">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-bold text-slate-200">All Cleared, Pare! 🍻</p>
+                        <p class="text-xs text-slate-500 mt-1 max-w-[200px]">Wala kang aktibong utang ngayon. Stay disciplined!</p>
+                    </div>
+                `; 
+            } else {
+                debts.forEach(d => {
+                    // REAL-TIME STATUS MAKER
+                    const daysLeft = calculateDaysRemaining(d.dueDate || d.days);
+                    let statusText = `Due in ${daysLeft} days`;
+                    let labelColor = "text-slate-500";
+                    let dotColor = "bg-emerald-500";
+                    
+                    if (daysLeft === 0) {
+                        statusText = "DUE TODAY, PARE! ⚠️";
+                        labelColor = "text-amber-400 font-extrabold";
+                        dotColor = "bg-amber-500";
+                    } else if (daysLeft < 0) {
+                        statusText = `OVERDUE BY ${Math.abs(daysLeft)} DAYS! 🚨`;
+                        labelColor = "text-red-500 font-extrabold animate-pulse";
+                        dotColor = "bg-red-500";
+                    } else if (d.score > 500) {
+                        dotColor = "bg-red-500";
+                    } else if (d.score > 150) {
+                        dotColor = "bg-amber-500";
+                    }
+
+                    dashboardDebtList.innerHTML += `
+                        <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-slate-700">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full ${dotColor}"></span>
+                                        <p class="text-sm font-bold text-white">${d.name}</p>
+                                    </div>
+                                    <p class="text-[11px] ${labelColor} mt-1 font-medium">${d.interest}% Interest • ${statusText}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-extrabold text-slate-200">₱${d.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                    <span class="text-[9px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-2 py-0.5 rounded-md mt-1 inline-block">Score ${d.score}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-center pt-1.5 border-t border-slate-800/50">
+                                <button onclick="openPaymentModal(${d.id})" class="text-blue-400 hover:text-blue-300 active:text-blue-500 text-[11px] font-bold transition-colors w-full text-center py-1">
+                                    Paid / Reduce Balance
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            /* C. Alert System Card Configuration */
+            const alertCard = document.getElementById('dashboard-alert-card');
+            if (debts.length > 0) {
+                const topPriority = debts[0];
+                const alertDays = calculateDaysRemaining(topPriority.dueDate || topPriority.days);
+                let alertDaysText = alertDays < 0 ? `${Math.abs(alertDays)} days OVERDUE` : `only ${alertDays} days left`;
+                
+                document.getElementById('alert-title').innerText = alertDays <= 0 ? `Urgent: Resolve ${topPriority.name}!` : `Pay ${topPriority.name} Today`;
+                document.getElementById('alert-desc').innerText = `Critical risk score of ${topPriority.score} at ${topPriority.interest}% interest with ${alertDaysText}.`;
+                alertCard.classList.remove('hidden');
+            } else {
+                alertCard.classList.add('hidden');
+            }
+
+            /* D. Matrix Tab Configuration */
+            const fullDebtList = document.getElementById('full-debt-list');
+            fullDebtList.innerHTML = '';
+            debts.forEach((d, idx) => {
+                let rankBadge = "bg-slate-800 text-slate-400";
+                if (idx === 0) rankBadge = "bg-red-500/20 text-red-400";
+                else if (idx === 1) rankBadge = "bg-amber-500/20 text-amber-400";
+
+                const matrixDays = calculateDaysRemaining(d.dueDate || d.days);
+                let matrixDaysText = matrixDays < 0 ? `${Math.abs(matrixDays)}d OVERDUE` : `${matrixDays}d left`;
+                let matrixLabelColor = matrixDays < 0 ? "text-red-500 font-bold" : "text-slate-500";
+                if (matrixDays === 0) { matrixDaysText = "TODAY"; matrixLabelColor = "text-amber-400 font-bold"; }
+
+                fullDebtList.innerHTML += `
+                    <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl flex justify-between items-center">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold ${rankBadge} px-1.5 py-0.5 rounded">Rank #${idx + 1}</span>
+                                <p class="text-xs font-bold text-white">${d.name}</p>
+                            </div>
+                            <p class="text-[9px] ${matrixLabelColor} mt-1">${d.interest}% Int. | ${matrixDaysText} | Score: ${d.score}</p>
+                        </div>
+                        <p class="text-xs font-bold text-slate-300">₱${d.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    </div>
+                `;
+            });
+
+            /* E. Render Payment History Log List */
+            const historyListContainer = document.getElementById('history-log-list');
+            historyListContainer.innerHTML = '';
+
+            if (paymentHistory.length === 0) {
+                historyListContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-slate-600 py-8">
+                        <p class="text-[11px] font-medium">No recent transactions yet.</p>
+                    </div>
+                `;
+            } else {
+                paymentHistory.forEach(log => {
+                    const statusBadge = log.isFullySettled ?
+                         `<span class="text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded">Settled</span>` :
+                         `<span class="text-[9px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded">Reduced</span>`;
+
+                    historyListContainer.innerHTML += `
+                        <div class="p-2.5 bg-slate-950/60 border border-slate-800/60 rounded-xl flex justify-between items-center transition-all">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <p class="font-bold text-slate-200">${log.debtName}</p>
+                                    ${statusBadge}
+                                </div>
+                                <p class="text-[9px] text-slate-500 mt-0.5">${log.date}</p>
+                            </div>
+                            <p class="font-extrabold text-emerald-400">-₱${log.amountPaid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        /* --- 5. MODAL SYSTEM OPERATORS --- */
+        function openPaymentModal(debtId) {
+            const targetDebt = debts.find(d => d.id === debtId);
+            if (!targetDebt) return;
+            activePaymentDebtId = debtId;
+            document.getElementById('modal-debt-name').innerText = targetDebt.name;
+            document.getElementById('modal-debt-max').innerText = `Remaining Bal ₱${targetDebt.amount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            const amtInput = document.getElementById('modal-payment-amount');
+            amtInput.value = '';
+            amtInput.max = targetDebt.amount;
+            amtInput.placeholder = `Max ${targetDebt.amount}`;
+            document.getElementById('payment-modal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            activePaymentDebtId = null;
+            document.getElementById('payment-modal').classList.add('hidden');
+        }
+
+        function submitPayment() {
+            if (!activePaymentDebtId) return;
+            const targetDebt = debts.find(d => d.id === activePaymentDebtId);
+            if (!targetDebt) return;
+
+            const paymentValue = parseFloat(document.getElementById('modal-payment-amount').value);
+            
+            /* 1. Check kung valid number ang ininput */
+            if (isNaN(paymentValue) || paymentValue <= 0) {
+                showToast("Maglagay ka ng tamang halaga, pare!");
+                return;
+            }
+            
+            /* 2. NEW Check kung sapat ang Extra Cash ng user */
+            if (paymentValue > extraBudget) {
+                showToast(`Insufficient balance, pare! ₱${extraBudget.toLocaleString()} na lang ang Extra Cash mo.`);
+                return;
+            }
+            
+            /* 3. Check kung lumagpas sa mismong halaga ng utang */
+            if (paymentValue > targetDebt.amount) {
+                showToast(`Hindi pwedeng lumagpas sa ₱${targetDebt.amount.toLocaleString()} na utang!`);
+                return;
+            }
+
+            /* --- LOGIC SA HISTORY LOG --- */
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + 
+                                now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+            paymentHistory.unshift({
+                id: Date.now(),
+                debtName: targetDebt.name,
+                amountPaid: paymentValue,
+                date: formattedDate,
+                isFullySettled: (paymentValue === targetDebt.amount)
+            });
+
+            /* Ligtas nang ibawas dahil pumasa sa lahat ng validation */
+            targetDebt.amount -= paymentValue;
+            extraBudget -= paymentValue;
+
+            if (targetDebt.amount <= 0) {
+                debts = debts.filter(d => d.id !== activePaymentDebtId);
+                showToast(`Fully settled na ang ${targetDebt.name}! 👍`);
+            } else {
+                showToast(`Nabawasan ng ₱${paymentValue.toLocaleString()} ang ${targetDebt.name}.`);
+            }
+
+            saveData();
+            closePaymentModal();
+            renderApp();
+        }
+
+        /* --- 6. FORM REGISTRATION --- */
+        function addDebt() {
+            const name = document.getElementById('input-name').value.trim();
+            const amount = parseFloat(document.getElementById('input-amount').value);
+            const interest = parseFloat(document.getElementById('input-interest').value);
+            const dueDate = document.getElementById('input-duedate').value; // Kinukuha ang date string
+
+            if (!name || isNaN(amount) || isNaN(interest) || !dueDate) {
+                alert("Kumpletuhin ang detalye, pare!");
+                return;
+            }
+
+            const newDebt = {
+                id: Date.now(),
+                name: name,
+                amount: amount,
+                interest: interest,
+                dueDate: dueDate, // Dito na ise-save ang YYYY-MM-DD
+                score: 0
+            };
+
+            debts.push(newDebt);
+            saveData();
+            
+            // Balik sa Dashboard at i-refresh ang UI
+            switchScreen('screen-dashboard');
+            renderApp();
+            
+            // Clear inputs
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-amount').value = '';
+            document.getElementById('input-interest').value = '';
+            document.getElementById('input-duedate').value = '';
+        }
+
+        /* --- 7. ROUTING CONTROLS --- */
+        function switchScreen(screenName) {
+            const screens = {
+                'login': document.getElementById('login-screen'),
+                'home': document.getElementById('dashboard-screen'),
+                'debts': document.getElementById('debts-screen'),
+                'settings': document.getElementById('settings-screen')
+            };
+            const navBar = document.getElementById('nav-bar');
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            if (screens[screenName]) screens[screenName].classList.remove('hidden');
+
+            if (screenName === 'login') {
+                navBar.classList.add('hidden');
+                return;
+            } else {
+                navBar.classList.remove('hidden');
+            }
+
+            const buttons = {
+                'home': document.getElementById('btn-home'),
+                'debts': document.getElementById('btn-debts'),
+                'settings': document.getElementById('btn-settings')
+            };
+            Object.keys(buttons).forEach(k => {
+                if (k === screenName) {
+                    buttons[k].classList.add('text-blue-500');
+                    buttons[k].classList.remove('text-slate-500');
+                } else {
+                    buttons[k].classList.add('text-slate-500');
+                    buttons[k].classList.remove('text-blue-500');
+                }
+            });
+        }
+
+        /* --- 8. AUTH LIFECYCLE CONTROLS --- */
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const userVal = document.getElementById('username').value.trim();
+            const passVal = document.getElementById('password').value.trim();
+
+            if (userVal === "" || passVal === "") {
+                showToast("Please ");
+                return;
+            }
+
+            applyUserSession(userVal);
+            renderApp();
+            switchScreen('home');
+            showToast(`Sign in successful. Welcome, ${userVal}!`);
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('paysmart_user');
+            document.getElementById('username').value = "";
+            document.getElementById('password').value = "";
+            switchScreen('login');
+            showToast("Logged out successfully.");
+        });
+
+        /* --- 9. ON LOAD INITIAL VALIDATION CHECK --- */
+        window.addEventListener('DOMContentLoaded', () => {
+            if (currentUser) {
+                applyUserSession(currentUser);
+                renderApp();
+                switchScreen('home');
+            } else {
+                switchScreen('login');
+            }
+        });
+
+        function clearHistory() {
+            if (confirm("Gusto mo ba talagang burahin ang buong payment history, pare?")) {
+                paymentHistory = [];
+                saveData();
+                renderApp();
+                showToast("Payment logs cleared! 🧹");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Paysmart</string>
+    <string name="title_activity_main">Paysmart</string>
+    <string name="package_name">com.dreidev.paysmart</string>
+    <string name="custom_url_scheme">com.dreidev.paysmart</string>
+</resources>
