@@ -1,0 +1,50 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Unzip project files
+        run: |
+          unzip paysmart-app.zip -d extracted_project
+          # I-move lahat ng files sa root level para mabasa ng build tools
+          mv extracted_project/paysmart-app/* . || mv extracted_project/* . || true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Sync Capacitor
+        run: |
+          npx cap sync android
+
+      - name: Build Android App (APK)
+        run: |
+          cd android && ./gradlew assembleDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: paysmart-app
+          path: android/app/build/outputs/apk/debug/app-debug.apk
