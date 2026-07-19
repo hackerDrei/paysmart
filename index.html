@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PAYSMART Prototype - Beta Test v1</title>
     <!-- Tailwind CSS Play CDN -->
+    <link rel="stylesheet" href="output.css">
     <script src="https://cdn.tailwindcss.com"></script>
    <style>
         /* Global & Performance Mobile Fixes */
@@ -20,8 +21,8 @@
 
         /* DEFAULT (Pang-Desktop / Testing View sa Browser): May frame at border */
         .mobile-screen {
-            max-width: 412px;  /* Standard Android/iOS width */
-            height: 844px;     /* Mas siksik at magandang mobile height */
+            max-width: 412px;  
+            height: 844px;     
         }
 
         /* AUTOMATIC RESPONSIVE (Pang-Webwrap / Actual Mobile View): Kusa itong gagana kapag nasa cp na */
@@ -29,7 +30,7 @@
             .mobile-screen {
                 max-width: 100% !important;
                 height: 100vh !important;
-                height: -webkit-fill-available !important; /* Para sa iOS notch */
+                height: -webkit-fill-available !important; 
                 border: none !important;
                 border-radius: 0px !important;
             }
@@ -56,10 +57,10 @@
         <!-- ==================== SCREEN 1: SPLASH & LOGIN ==================== -->
         <div id="login-screen" class="flex-1 flex flex-col justify-between p-6">
             <!-- Top Branding & Logo -->
-            <div class="text-center mt-16">
+            <div class="text-center mt-12">
                 <div class="inline-flex p-4 bg-blue-600 rounded-[24px] mb-4 shadow-lg shadow-blue-500/30">
                     <!-- Secure Wallet / Smart Icon -->
-                    <svg class="w-10 h-10 text-white fill-none stroke=currentColor" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="w-10 h-10 text-white fill-none stroke="currentColor" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                     </svg>
                 </div>
@@ -75,17 +76,28 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Password</label>
-                    <input type="password" id="password" class="w-full bg-slate-950/80 border border-slate-800/80 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-600" placeholder="••••••••">
+                    <div class="relative w-full">
+                        <input type="password" id="password" class="w-full bg-slate-950/80 border border-slate-800/80 rounded-2xl px-4 py-3.5 pr-10 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-600" placeholder="••••••••">
+                        <button type="button" id="toggle-password-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none">
+                            <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <button id="login-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-all text-sm mt-2 flex justify-center items-center gap-2">
-                    <span>Sign In</span>
+                <div class="text-right">
+                    <button type="button" onclick="recoverPassword()" class="text-[10px] text-blue-400 font-bold hover:underline">Forgot Password?</button>
+                </div>
+                <button id="login-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-all text-sm flex justify-center items-center gap-2">
+                    <span>Sign In / Register</span>
                     <svg class="w-4 h-4 fill-none stroke="currentColor" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </button>
             </div>
 
             <!-- Version & Info Footer -->
             <div class="text-center mb-4">
-                <p class="text-[10px] text-slate-600 font-medium">PAYSMART Prototype • Build v1.3.0-Persistent</p>
+                <p class="text-[10px] text-slate-600 font-medium">PAYSMART Prototype • Build w/ PIN Lock Security</p>
             </div>
         </div>
 
@@ -112,7 +124,6 @@
                     <!-- Extra Budget Slot -->
                     <div>
                         <p class="text-[10px] text-blue-100 uppercase tracking-widest font-bold mb-1">Extra Budget (₱)</p>
-                        <!-- Tinanggal ang border-b at ginawang flex para pantay at malinis tingnan -->
                         <div class="flex items-center pb-1">
                             <span class="text-white text-xl font-black mr-0.5">₱</span>
                             <input type="number" id="extraCashInput" inputmode="numeric" pattern="[0-9]*" value="10200" min="0"
@@ -180,12 +191,9 @@
                 <div class="space-y-2">
                     <input type="text" id="input-name" placeholder="Debt Name (e.g. GCash Loan)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-blue-500">
                     
-                    <!-- Dito natin binago ang grid para maging malinis ang bagsak ng Date Picker -->
                     <div class="grid grid-cols-3 gap-2">
                         <input type="number" id="input-amount" inputmode="numeric" pattern="[0-9]*" placeholder="Amount (₱)" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[11px] text-white focus:outline-none focus:border-blue-500">
                         <input type="number" id="input-interest" inputmode="numeric" pattern="[0-9]*" placeholder="Interest %" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[11px] text-white focus:outline-none focus:border-blue-500">
-                        
-                        <!-- Pinalitan ang input-days ng type="date" para lumabas ang kalendaryo sa cp -->
                         <input type="date" id="input-duedate" class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[10px] text-slate-400 focus:outline-none focus:border-blue-500 uppercase font-bold tracking-tighter">
                     </div>
                 </div>
@@ -226,10 +234,17 @@
                         <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Payment History</h4>
                         <button onclick="clearHistory()" class="text-[9px] text-red-400 font-bold hover:underline">Clear Logs</button>
                     </div>
-                    <!-- Dito babagsak ang mga nabayaran -->
                     <div id="history-log-list" class="space-y-2 overflow-y-auto flex-1 pr-1 no-scrollbar text-xs">
                         <!-- Dynamic Items or Empty State -->
                     </div>
+                </div>
+
+                <!-- Dev Utilities -->
+                <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 space-y-2 flex-shrink-0">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-amber-500">Storage Utility</h4>
+                    <button onclick="devResetApp()" class="w-full bg-amber-600/10 border border-amber-600/30 text-amber-400 hover:bg-amber-600 hover:text-white font-bold py-2 rounded-xl transition-all text-xs">
+                        Wipe App Storage Cache (Fresh Start)
+                    </button>
                 </div>
 
                 <!-- Weight Metrics -->
@@ -311,10 +326,18 @@
 
     <!-- MODERN SPA STATE ROUTER & PERSISTENT LOCALSTORAGE ENGINE -->
     <script>
-        // Function para kalkulahin kung ilang araw ang natitira
+        // Auxiliary function para makabuo ng fallback dynamic dates
+        function getFutureDateISO(daysAhead) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysAhead);
+            return d.toISOString().split('T')[0];
+        }
+
+        // Kwalipikasyon ng remaining days para sa system scoring
         function calculateDaysRemaining(dueDateString) {
+            if (!dueDateString) return 1;
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // I-reset ang oras para buong araw ang bilang
+            today.setHours(0, 0, 0, 0); 
             
             const dueDate = new Date(dueDateString);
             dueDate.setHours(0, 0, 0, 0);
@@ -328,21 +351,12 @@
         /* --- 1. LOCALSTORAGE STATE INITIALIZATION --- */
         const WEIGHTS = { interest: 0.40, urgency: 0.60 };
         
-        /* Load session and data from LocalStorage or use standard fallbacks */
+        /* Persistent dynamic data container fields */
         let currentUser = localStorage.getItem('paysmart_user');
-        let extraBudget = parseFloat(localStorage.getItem('paysmart_budget')) || 10200;
-        
-        let defaultDebts = [
-            { id: 1, name: "Credit Card", amount: 15000, interest: 35, days: 3 },
-            { id: 2, name: "Appliance Loan", amount: 8000, interest: 12, days: 18 },
-            { id: 3, name: "Personal Cash Loan", amount: 5000, interest: 5, days: 25 }
-        ];
-        
-        let debts = JSON.parse(localStorage.getItem('paysmart_debts')) || defaultDebts;
+        let extraBudget = 10200;
+        let debts = [];
+        let paymentHistory = [];
         let activePaymentDebtId = null;
-
-        /* Load history from LocalStorage or fallback to empty array */
-        let paymentHistory = JSON.parse(localStorage.getItem('paysmart_history')) || [];
 
         function calculateScore(interest, days) {
             const interestScore = interest * WEIGHTS.interest;
@@ -350,14 +364,36 @@
             return parseFloat((interestScore + urgencyScore).toFixed(2));
         }
 
-        /* Save states back to local cache */
-        function saveData() {
-            localStorage.setItem('paysmart_debts', JSON.stringify(debts));
-            localStorage.setItem('paysmart_budget', extraBudget.toString());
-            localStorage.setItem('paysmart_history', JSON.stringify(paymentHistory));
+        /* Load structure data base sa multi-user dynamic key configuration */
+        function loadUserData() {
+            if (!currentUser) return;
+            
+            const userKey = currentUser.toLowerCase();
+            extraBudget = parseFloat(localStorage.getItem(`paysmart_budget_${userKey}`)) || 10200;
+            
+            let defaultDebts = [
+                { id: 1, name: "Credit Card", amount: 15000, interest: 35, dueDate: getFutureDateISO(3) },
+                { id: 2, name: "Appliance Loan", amount: 8000, interest: 12, dueDate: getFutureDateISO(18) },
+                { id: 3, name: "Personal Cash Loan", amount: 5000, interest: 5, dueDate: getFutureDateISO(25) }
+            ];
+            
+            const savedDebts = localStorage.getItem(`paysmart_debts_${userKey}`);
+            debts = savedDebts ? JSON.parse(savedDebts) : defaultDebts;
+            
+            const savedHistory = localStorage.getItem(`paysmart_history_${userKey}`);
+            paymentHistory = savedHistory ? JSON.parse(savedHistory) : [];
         }
 
-        /* --- 1B. TOAST CONTROLLER --- */
+        /* Save sequence isolated tags to storage cache */
+        function saveData() {
+            if (!currentUser) return;
+            const userKey = currentUser.toLowerCase();
+            localStorage.setItem(`paysmart_debts_${userKey}`, JSON.stringify(debts));
+            localStorage.setItem(`paysmart_budget_${userKey}`, extraBudget.toString());
+            localStorage.setItem(`paysmart_history_${userKey}`, JSON.stringify(paymentHistory));
+        }
+
+        /* --- 1B. TOAST CONTROLLER (Strictly English Native Style) --- */
         let toastTimeout = null;
         function showToast(message) {
             const toast = document.getElementById('custom-toast');
@@ -371,13 +407,14 @@
             }, 2500);
         }
 
-        /* --- 2. DYNAMIC SESSION LOOKS SETUP --- */
+        /* --- 2. DYNAMIC SESSION HEADER LOOKS SETTINGS --- */
         function applyUserSession(username) {
             if (!username) return;
             currentUser = username;
             localStorage.setItem('paysmart_user', currentUser);
+            
+            loadUserData();
 
-            /* Gagawa ng functional 2-letter avatar token base sa username */
             let cleanUser = username.replace(/[^a-zA-Z0-9]/g, '');
             let initials = "US";
             if (cleanUser.length >= 2) {
@@ -386,99 +423,76 @@
                 initials = cleanUser + "X";
             }
 
-            /* Baguhin ang mga pangalan at avatar sa app */
             document.getElementById('display-user-name').innerText = username;
             document.getElementById('settings-user-name').innerText = username;
             document.getElementById('display-avatar').innerText = initials;
             document.getElementById('settings-avatar').innerText = initials;
         }
 
-        /* --- 3. BUDGET DYNAMIC UPDATE --- */
+        /* --- 3. EXTRA CASH METRIC DYNAMIC UPDATER --- */
         function updateBudget(val) {
             extraBudget = parseFloat(val) || 0;
             saveData();
             renderApp();
         }
 
-       /* --- 4. RENDER ENGINE --- */
+       /* --- 4. DATA PIPELINE RENDERING ENGINE --- */
         function renderApp() {
-            let hasChanges = false; // Tracker para malaman kung may nagbago sa data at kailangang mag-save
+            let hasChanges = false; 
 
-            // REAL-TIME ENGINE: Kinakalcula ang dynamic days at score base sa calendar date ngayon
             debts.forEach(d => { 
-                const daysLeft = calculateDaysRemaining(d.dueDate || d.days); 
+                const daysLeft = calculateDaysRemaining(d.dueDate); 
                 
-                // ==========================================
-                // DYNAMIC COMPOUND OVERDUE PENALTY
-                // ==========================================
+                // Compounding interest calculator logic pag lumagpas sa line threshold
                 if (daysLeft < 0) {
                     const totalDaysOverdue = Math.abs(daysLeft);
-                    
-                    // Siguraduhing may tracker ang utang para sa mga araw na napatungan na
                     if (!d.lastPenaltyDays) d.lastPenaltyDays = 0;
                     
-                    // Kung may mga bagong araw na lumipas na hindi pa nabibilang ang tubo:
                     if (totalDaysOverdue > d.lastPenaltyDays) {
                         const unpaidDays = totalDaysOverdue - d.lastPenaltyDays;
-                        
-                        // Patong ng tubo bawat araw na lumalampas (Daily Compounding based on interest %)
                         for (let i = 0; i < unpaidDays; i++) {
                             d.amount = d.amount + (d.amount * (d.interest / 100));
                         }
-                        
-                        d.lastPenaltyDays = totalDaysOverdue; // I-record na natapos na ang kalkulasyon para sa mga araw na ito
-                        hasChanges = true; // Kailangang i-save ang bagong amount
+                        d.lastPenaltyDays = totalDaysOverdue; 
+                        hasChanges = true; 
                     }
                 }
-                // ==========================================
 
-                const dynamicDays = daysLeft <= 0 ? 0.5 : daysLeft; // Iwasan ang division by zero o negative
-                
-                // DYNAMIC SCORE FORMULA: Ginagamit na ang real-time remaining days at updated amount
+                const dynamicDays = daysLeft <= 0 ? 0.5 : daysLeft; 
                 d.score = Math.round((d.amount * (d.interest / 100)) / dynamicDays);
             });
             
-            // Kung may pumatong na interes, automatic na ise-save sa LocalStorage
             if (hasChanges && typeof saveData === 'function') {
                 saveData();
             }
             
-            // I-sort ang queue: Pinakamataas na score ang laging priority sa taas
             debts.sort((a, b) => b.score - a.score);
 
-            /* A. Compute Leftover Balance */
             let totalActiveDebtsAmount = 0;
             debts.forEach(d => { totalActiveDebtsAmount += d.amount; });
             
-            /* REVISED: I-cap sa 0 ang pinakamababang pwedeng ilabas ng Leftover Cash */
             const leftoverCash = Math.max(0, extraBudget - totalActiveDebtsAmount);
 
-            /* I-render ang Extra Budget Input field safely */
             document.getElementById('extraCashInput').value = extraBudget;
             
-            /* NEW: I-render ang bagong Total Debt slot */
             if (document.getElementById('total-debt-display')) {
                 document.getElementById('total-debt-display').innerText = `₱${totalActiveDebtsAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
             
-            /* I-render ang Leftover Cash */
             const leftoverDisplay = document.getElementById('remainingCashDisplay');
             leftoverDisplay.innerText = `₱${leftoverCash.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-            /* Dynamic color at animation indicator para sa Leftover Cash kapag kulang ang budget */
             if (extraBudget < totalActiveDebtsAmount) {
                 leftoverDisplay.className = "text-xl font-black tracking-tight text-red-500 animate-pulse";
             } else {
                 leftoverDisplay.className = "text-xl font-black tracking-tight text-emerald-300";
             }
 
-           /* B. Build Dashboard Active Debts */
             const dashboardDebtList = document.getElementById('dashboard-debt-list');
             const dashboardDebtHeader = document.getElementById('dashboard-debt-header');
             dashboardDebtHeader.innerText = `Active Debts (${debts.length})`;
             dashboardDebtList.innerHTML = '';
 
-            // Heto ang conditional checker para sa malinis na Empty State UI
             if (debts.length === 0) {
                 dashboardDebtList.innerHTML = `
                     <div class="flex flex-col items-center justify-center py-12 px-4 text-center">
@@ -487,20 +501,19 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <p class="text-sm font-bold text-slate-200">All Cleared, Pare! 🍻</p>
-                        <p class="text-xs text-slate-500 mt-1 max-w-[200px]">Wala kang aktibong utang ngayon. Stay disciplined!</p>
+                        <p class="text-sm font-bold text-slate-200">No Active Debts</p>
+                        <p class="text-xs text-slate-500 mt-1 max-w-[220px]">Your queue is currently empty. Add a new entry to start tracking and prioritizing.</p>
                     </div>
                 `; 
             } else {
                 debts.forEach(d => {
-                    // REAL-TIME STATUS MAKER
-                    const daysLeft = calculateDaysRemaining(d.dueDate || d.days);
+                    const daysLeft = calculateDaysRemaining(d.dueDate);
                     let statusText = `Due in ${daysLeft} days`;
                     let labelColor = "text-slate-500";
                     let dotColor = "bg-emerald-500";
                     
                     if (daysLeft === 0) {
-                        statusText = "DUE TODAY, PARE! ⚠️";
+                        statusText = "DUE TODAY ⚠️";
                         labelColor = "text-amber-400 font-extrabold";
                         dotColor = "bg-amber-500";
                     } else if (daysLeft < 0) {
@@ -516,16 +529,23 @@
                     dashboardDebtList.innerHTML += `
                         <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-2 transition-all hover:border-slate-700">
                             <div class="flex justify-between items-start">
-                                <div>
+                                <div class="flex-1 pr-2">
                                     <div class="flex items-center gap-2">
                                         <span class="w-2 h-2 rounded-full ${dotColor}"></span>
                                         <p class="text-sm font-bold text-white">${d.name}</p>
                                     </div>
                                     <p class="text-[11px] ${labelColor} mt-1 font-medium">${d.interest}% Interest • ${statusText}</p>
                                 </div>
-                                <div class="text-right">
-                                    <p class="text-sm font-extrabold text-slate-200">₱${d.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                                    <span class="text-[9px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-2 py-0.5 rounded-md mt-1 inline-block">Score ${d.score}</span>
+                                <div class="text-right flex flex-col items-end gap-1 flex-shrink-0">
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-sm font-extrabold text-slate-200">₱${d.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                                        <button onclick="deleteDebtCard(${d.id}, '${d.name.replace(/'/g, "\\'")}')" class="text-slate-600 hover:text-red-400 active:text-red-600 p-1 transition-colors rounded-lg hover:bg-slate-950" title="Delete Entry">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <span class="text-[9px] font-bold bg-slate-950 text-slate-400 border border-slate-800 px-2 py-0.5 rounded-md mt-0.5 inline-block">Score ${d.score}</span>
                                 </div>
                             </div>
                             <div class="flex justify-center pt-1.5 border-t border-slate-800/50">
@@ -538,11 +558,10 @@
                 });
             }
 
-            /* C. Alert System Card Configuration */
             const alertCard = document.getElementById('dashboard-alert-card');
             if (debts.length > 0) {
                 const topPriority = debts[0];
-                const alertDays = calculateDaysRemaining(topPriority.dueDate || topPriority.days);
+                const alertDays = calculateDaysRemaining(topPriority.dueDate);
                 let alertDaysText = alertDays < 0 ? `${Math.abs(alertDays)} days OVERDUE` : `only ${alertDays} days left`;
                 
                 document.getElementById('alert-title').innerText = alertDays <= 0 ? `Urgent: Resolve ${topPriority.name}!` : `Pay ${topPriority.name} Today`;
@@ -552,7 +571,6 @@
                 alertCard.classList.add('hidden');
             }
 
-            /* D. Matrix Tab Configuration */
             const fullDebtList = document.getElementById('full-debt-list');
             fullDebtList.innerHTML = '';
             debts.forEach((d, idx) => {
@@ -560,7 +578,7 @@
                 if (idx === 0) rankBadge = "bg-red-500/20 text-red-400";
                 else if (idx === 1) rankBadge = "bg-amber-500/20 text-amber-400";
 
-                const matrixDays = calculateDaysRemaining(d.dueDate || d.days);
+                const matrixDays = calculateDaysRemaining(d.dueDate);
                 let matrixDaysText = matrixDays < 0 ? `${Math.abs(matrixDays)}d OVERDUE` : `${matrixDays}d left`;
                 let matrixLabelColor = matrixDays < 0 ? "text-red-500 font-bold" : "text-slate-500";
                 if (matrixDays === 0) { matrixDaysText = "TODAY"; matrixLabelColor = "text-amber-400 font-bold"; }
@@ -579,7 +597,6 @@
                 `;
             });
 
-            /* E. Render Payment History Log List */
             const historyListContainer = document.getElementById('history-log-list');
             historyListContainer.innerHTML = '';
 
@@ -637,25 +654,21 @@
 
             const paymentValue = parseFloat(document.getElementById('modal-payment-amount').value);
             
-            /* 1. Check kung valid number ang ininput */
             if (isNaN(paymentValue) || paymentValue <= 0) {
-                showToast("Maglagay ka ng tamang halaga, pare!");
+                showToast("Please enter a valid payment amount!");
                 return;
             }
             
-            /* 2. NEW Check kung sapat ang Extra Cash ng user */
             if (paymentValue > extraBudget) {
-                showToast(`Insufficient balance, pare! ₱${extraBudget.toLocaleString()} na lang ang Extra Cash mo.`);
+                showToast(`Insufficient balance! You only have ₱${extraBudget.toLocaleString()} Extra Cash remaining.`);
                 return;
             }
             
-            /* 3. Check kung lumagpas sa mismong halaga ng utang */
             if (paymentValue > targetDebt.amount) {
-                showToast(`Hindi pwedeng lumagpas sa ₱${targetDebt.amount.toLocaleString()} na utang!`);
+                showToast(`Payment cannot exceed the remaining balance of ₱${targetDebt.amount.toLocaleString()}!`);
                 return;
             }
 
-            /* --- LOGIC SA HISTORY LOG --- */
             const now = new Date();
             const formattedDate = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' ' + 
                                 now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -668,15 +681,14 @@
                 isFullySettled: (paymentValue === targetDebt.amount)
             });
 
-            /* Ligtas nang ibawas dahil pumasa sa lahat ng validation */
             targetDebt.amount -= paymentValue;
             extraBudget -= paymentValue;
 
             if (targetDebt.amount <= 0) {
                 debts = debts.filter(d => d.id !== activePaymentDebtId);
-                showToast(`Fully settled na ang ${targetDebt.name}! 👍`);
+                showToast("Queue updated. All debts have been fully settled! 🚀");
             } else {
-                showToast(`Nabawasan ng ₱${paymentValue.toLocaleString()} ang ${targetDebt.name}.`);
+                showToast(`Successfully reduced ${targetDebt.name} balance by ₱${paymentValue.toLocaleString()}.`);
             }
 
             saveData();
@@ -684,15 +696,15 @@
             renderApp();
         }
 
-        /* --- 6. FORM REGISTRATION --- */
+        /* --- 6. MATRIX REGISTRATION & DELETE CONTROL --- */
         function addDebt() {
             const name = document.getElementById('input-name').value.trim();
             const amount = parseFloat(document.getElementById('input-amount').value);
             const interest = parseFloat(document.getElementById('input-interest').value);
-            const dueDate = document.getElementById('input-duedate').value; // Kinukuha ang date string
+            const dueDate = document.getElementById('input-duedate').value; 
 
             if (!name || isNaN(amount) || isNaN(interest) || !dueDate) {
-                alert("Kumpletuhin ang detalye, pare!");
+                showToast("Please fill out all technical fields correctly.");
                 return;
             }
 
@@ -701,25 +713,33 @@
                 name: name,
                 amount: amount,
                 interest: interest,
-                dueDate: dueDate, // Dito na ise-save ang YYYY-MM-DD
+                dueDate: dueDate, 
                 score: 0
             };
 
             debts.push(newDebt);
             saveData();
             
-            // Balik sa Dashboard at i-refresh ang UI
-            switchScreen('screen-dashboard');
+            switchScreen('home');
             renderApp();
             
-            // Clear inputs
             document.getElementById('input-name').value = '';
             document.getElementById('input-amount').value = '';
             document.getElementById('input-interest').value = '';
             document.getElementById('input-duedate').value = '';
+            showToast("Successfully Registered Entry!");
         }
 
-        /* --- 7. ROUTING CONTROLS --- */
+        function deleteDebtCard(debtId, debtName) {
+            if (confirm(`Are you sure you want to delete '${debtName}' from the queue? (This action will not affect your Extra Cash balance)`)) {
+                debts = debts.filter(d => d.id !== debtId);
+                saveData();
+                renderApp();
+                showToast(`Removed ${debtName} from the list.`);
+            }
+        }
+
+        /* --- 7. APPS TAB ROUTER CONTROLS --- */
         function switchScreen(screenName) {
             const screens = {
                 'login': document.getElementById('login-screen'),
@@ -754,14 +774,80 @@
             });
         }
 
-        /* --- 8. AUTH LIFECYCLE CONTROLS --- */
+        /* --- 8. SLICK PASSWORD VISIBILITY TOGGLE (SVG Paths Shift) --- */
+        document.getElementById('toggle-password-btn').addEventListener('click', () => {
+            const passInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 014.132-5.4M9.695 9.695A3 3 0 0014 14m-1.875-1.875L19.5 19.5M10 5.25c.662-.16 1.348-.25 2.05-.25 4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.4M3 3l18 18" />
+                `;
+            } else {
+                passInput.type = "password";
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                `;
+            }
+        });
+
+        /* --- 9. LOCAL STORAGE SECURITY RECOVERY PROMPTS --- */
+        function recoverPassword() {
+            const username = prompt("Enter username to verify identity:").trim().toLowerCase();
+            if (!username) return;
+
+            const savedCreds = localStorage.getItem(`paysmart_auth_${username}`);
+            if (!savedCreds) {
+                showToast("Account profile not found.");
+                return;
+            }
+
+            const credentials = JSON.parse(savedCreds);
+            const enteredPin = prompt("Enter your 4-digit Recovery PIN / Master Key:");
+            
+            if (enteredPin && enteredPin.trim() === credentials.recoveryPin) {
+                alert(`Identity Verified Successfully!\nYour password is: ${credentials.password}`);
+            } else {
+                showToast("Incorrect security recovery PIN.");
+            }
+        }
+
+        /* --- 10. AUTH FLOW LIFECYCLE (REGISTER OR SIGN IN DEPENDING ON STORAGE METRICS) --- */
         document.getElementById('login-btn').addEventListener('click', () => {
             const userVal = document.getElementById('username').value.trim();
             const passVal = document.getElementById('password').value.trim();
 
             if (userVal === "" || passVal === "") {
-                showToast("Please ");
+                showToast("Username and password are required.");
                 return;
+            }
+
+            const userKey = userVal.toLowerCase();
+            const savedAuthData = localStorage.getItem(`paysmart_auth_${userKey}`);
+
+            if (!savedAuthData) {
+                // Kung bago ang profile, setup security recovery pin parameters
+                const pin = prompt("Account profile not found. Let's register this account!\nEnter a 4-Digit PIN or Master Key for password recovery:");
+                if (!pin || pin.trim() === "") {
+                    showToast("Registration cancelled. Recovery PIN is required.");
+                    return;
+                }
+                
+                const newAuth = {
+                    password: passVal,
+                    recoveryPin: pin.trim()
+                };
+                localStorage.setItem(`paysmart_auth_${userKey}`, JSON.stringify(newAuth));
+                showToast("Account successfully registered! 🔐");
+            } else {
+                // Pag existing, validation match matching sequence check
+                const credentials = JSON.parse(savedAuthData);
+                if (credentials.password !== passVal) {
+                    showToast("Wrong password! Please check your credentials.");
+                    return;
+                }
             }
 
             applyUserSession(userVal);
@@ -772,13 +858,18 @@
 
         document.getElementById('logout-btn').addEventListener('click', () => {
             localStorage.removeItem('paysmart_user');
+            currentUser = null;
+            debts = [];
+            extraBudget = 10200;
+            paymentHistory = [];
+            
             document.getElementById('username').value = "";
             document.getElementById('password').value = "";
             switchScreen('login');
             showToast("Logged out successfully.");
         });
 
-        /* --- 9. ON LOAD INITIAL VALIDATION CHECK --- */
+        /* --- 11. INITIALIZATION LIFECYCLE HOOKS --- */
         window.addEventListener('DOMContentLoaded', () => {
             if (currentUser) {
                 applyUserSession(currentUser);
@@ -790,11 +881,18 @@
         });
 
         function clearHistory() {
-            if (confirm("Gusto mo ba talagang burahin ang buong payment history, pare?")) {
+            if (confirm("Are you sure you want to completely clear the payment history logs?")) {
                 paymentHistory = [];
                 saveData();
                 renderApp();
                 showToast("Payment logs cleared! 🧹");
+            }
+        }
+
+        function devResetApp() {
+            if(confirm("Are you sure you want to reset the app? This will wipe all accounts, data, and structural changes from the prototype storage.")) {
+                localStorage.clear();
+                window.location.reload();
             }
         }
     </script>
